@@ -23,6 +23,8 @@ public abstract class States {
         protected abstract void input();
         public abstract void update(float time);
         public abstract void render(SpriteBatch ab);
+    // this is to disapose the background to prevent memory leak
+        public abstract void dispose();
 
 
 

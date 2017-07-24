@@ -1,6 +1,7 @@
 package com.gao23.trumpbird.States;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gao23.trumpbird.TrumpBirdMain;
@@ -18,6 +19,12 @@ public class menuState extends States {
     private Texture playIcon;
 
 
+    @Override
+    public void dispose() {
+        background.dispose();
+        playIcon.dispose();
+    }
+
     public menuState(stateManager manager) {
         super(manager);
         background = new Texture("background.jpg");
@@ -26,12 +33,17 @@ public class menuState extends States {
 
     @Override
     public void input() {
-
+         if(Gdx.input.justTouched()){
+             manager.set(new playState(manager));
+             // now this dispose all the shit when play state comes in
+             this.dispose();
+         }
     }
 
     @Override
     public void update(float time) {
-
+          // gotta do this first
+          this.input();
     }
 
     @Override
