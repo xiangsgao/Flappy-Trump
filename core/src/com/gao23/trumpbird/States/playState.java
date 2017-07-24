@@ -1,5 +1,7 @@
 package com.gao23.trumpbird.States;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.gao23.trumpbird.sprites.trumpBird;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gao23.trumpbird.TrumpBirdMain;
@@ -10,17 +12,21 @@ import com.gao23.trumpbird.TrumpBirdMain;
 
 public class playState extends States {
     private trumpBird bird;
+    private Texture background;
 
     public playState(stateManager manager){
         super(manager);
-        bird = new trumpBird(50, 300);
+        bird = new trumpBird(25, 300);
         // this is to zoom in on only one part of the graphics
         cam.setToOrtho(false, TrumpBirdMain.WIDTH/2, TrumpBirdMain.HEIGHT/2);
+        background = new Texture("background.jpg");
     }
 
     @Override
     protected void input() {
-
+         if(Gdx.input.justTouched()){
+             bird.jump();
+         }
     }
 
     @Override
@@ -35,6 +41,7 @@ public class playState extends States {
         // this adjusts the sprite batch to the zoomed in camera
         ab.setProjectionMatrix(cam.combined);
         ab.begin();
+        ab.draw(background,0,0, cam.viewportWidth,cam.viewportHeight);
         ab.draw(bird.getTrumpB(), bird.getPostion().x, bird.getPostion().y);
         ab.end();
     }

@@ -36,5 +36,9 @@ public class trumpBird {
         this.velocity.scl(1/dt);
     }
 
+    public void jump(){
+        velocity.y = 250;
+    }
+
 
 }
