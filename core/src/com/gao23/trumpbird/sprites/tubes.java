@@ -10,6 +10,7 @@ import java.util.Random;
  */
 
 public class tubes {
+    public static final int TUBE_WIDTH = 35;
     private static final int RANGE_OF_HEIGHT_RANDOM = 130;
     private static final int TUBE_GAP = 100;
     private static final int LOWEST_TUBE_HEIGHT = 100;
@@ -33,11 +34,16 @@ public class tubes {
         return botTubePos;
     }
 
-    public tubes(float x){
+    public tubes(int  x){
         topTube = new Texture("toptube.png");
         bottomTube = new Texture("bottomtube.png");
         rand = new Random();
         this.topTubPos = new Vector2(x, rand.nextInt(this.RANGE_OF_HEIGHT_RANDOM) + this.TUBE_GAP + this.LOWEST_TUBE_HEIGHT);
+        this.botTubePos = new Vector2(x, topTubPos.y-this.TUBE_GAP-bottomTube.getHeight());
+    }
+
+    public void reposition(float x){
+        this.topTubPos.set(x, rand.nextInt(this.RANGE_OF_HEIGHT_RANDOM) + this.TUBE_GAP + this.LOWEST_TUBE_HEIGHT);
         this.botTubePos = new Vector2(x, topTubPos.y-this.TUBE_GAP-bottomTube.getHeight());
     }
 }
