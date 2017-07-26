@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.gao23.trumpbird.sprites.trumpBird;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gao23.trumpbird.TrumpBirdMain;
-
+import com.gao23.trumpbird.sprites.tubes;
 /**
  * Created by GAO on 7/23/2017.
  */
@@ -13,9 +13,11 @@ import com.gao23.trumpbird.TrumpBirdMain;
 public class playState extends States {
     private trumpBird bird;
     private Texture background;
+    private tubes tubes;
 
     public playState(stateManager manager){
         super(manager);
+        tubes = new tubes(100);
         bird = new trumpBird(25, 300);
         // this is to zoom in on only one part of the graphics
         cam.setToOrtho(false, TrumpBirdMain.WIDTH/2, TrumpBirdMain.HEIGHT/2);
@@ -43,6 +45,8 @@ public class playState extends States {
         ab.begin();
         ab.draw(background,0,0, cam.viewportWidth,cam.viewportHeight);
         ab.draw(bird.getTrumpB(), bird.getPostion().x, bird.getPostion().y);
+        ab.draw(tubes.getTopTube(),tubes.getTopTubPos().x,tubes.getTopTubPos().y);
+        ab.draw(tubes.getBottomTube(),tubes.getBotTubePos().x,tubes.getBotTubePos().y);
         ab.end();
     }
 
