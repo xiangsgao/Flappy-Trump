@@ -35,8 +35,6 @@ public class menuState extends States {
     public void input() {
          if(Gdx.input.justTouched()){
              manager.set(new playState(manager));
-             // now this dispose all the shit when play state comes in
-             this.dispose();
          }
     }
 

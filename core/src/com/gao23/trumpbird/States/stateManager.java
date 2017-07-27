@@ -20,12 +20,12 @@ public class stateManager {
     }
 
     public void pop(States state){
-        this.states.pop();
+        this.states.pop().dispose();
     }
 
     public void set (States state){
-        this.states.pop();
-        this.states.push(state);
+        this.pop(state);
+        this.push(state);
     }
 
     public void update(float dt){

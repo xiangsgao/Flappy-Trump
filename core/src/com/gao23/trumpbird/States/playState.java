@@ -7,6 +7,10 @@ import com.gao23.trumpbird.sprites.trumpBird;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gao23.trumpbird.TrumpBirdMain;
 import com.gao23.trumpbird.sprites.tubes;
+
+import java.util.Collections;
+import java.util.Random;
+
 /**
  * Created by GAO on 7/23/2017.
  */
@@ -17,6 +21,9 @@ public class playState extends States {
     private static final int TUBE_SPACING = 125;
     private static final int TUBE_NUMBER = 4;
     private Array<tubes> tubeArray;
+    private float lastPostion;
+
+
 
     public playState(stateManager manager){
         super(manager);
@@ -26,8 +33,14 @@ public class playState extends States {
         cam.setToOrtho(false, TrumpBirdMain.WIDTH/2, TrumpBirdMain.HEIGHT/2);
         background = new Texture("background.jpg");
         for(int i = 0; i<=this.TUBE_NUMBER;i++){
-                tubeArray.add(new tubes(i * this.TUBE_SPACING + tubes.TUBE_WIDTH));
+            if(i == 0){
+                tubeArray.add(new tubes(i * this.TUBE_SPACING + tubes.TUBE_WIDTH +200));
+            }
+            else{
+                tubeArray.add(new tubes(i * this.TUBE_SPACING + tubes.TUBE_WIDTH + new Random().nextInt(100) + 150));
+            }
         }
+        lastPostion = tubeArray.get(tubeArray.size-1).getTopTubPos().x;
     }
 
     @Override
@@ -44,7 +57,16 @@ public class playState extends States {
         cam.position.x = bird.getPostion().x + 80;
         for(tubes tube: tubeArray){
             if(cam.position.x-(cam.viewportWidth/2)>tube.getTopTubPos().x+tube.getTopTube().getWidth()) {
-                tube.reposition(tube.getTopTubPos().x+(tube.TUBE_WIDTH+TUBE_SPACING)*TUBE_NUMBER);
+                if(tube.getTopTubPos().x>this.lastPostion){
+                    tube.getTopTubPos().x = lastPostion;
+                }
+                tube.reposition(100 + tubes.TUBE_WIDTH + new Random().nextInt(100) + this.lastPostion);
+                this.lastPostion = tube.getTopTubPos().x;
+
+            }
+           if(tube.collides(bird.getBounds())){
+                manager.set(new playState(manager));
+                break;
             }
         }
         cam.update();
@@ -64,8 +86,13 @@ public class playState extends States {
         ab.end();
     }
 
+
     @Override
     public void dispose() {
-
+           for(tubes Tube: tubeArray){
+               Tube.dispose();
+           }
+           bird.disapose();
+           background.dispose();
     }
 }
