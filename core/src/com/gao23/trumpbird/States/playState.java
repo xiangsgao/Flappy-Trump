@@ -1,7 +1,11 @@
 package com.gao23.trumpbird.States;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.utils.Array;
 import com.gao23.trumpbird.sprites.trumpBird;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -22,25 +26,32 @@ public class playState extends States {
     private static final int TUBE_NUMBER = 4;
     private Array<tubes> tubeArray;
     private float lastPostion;
+    private Music music;
+    private Sound no;
+    private boolean gameOver = false;
+    BitmapFont font;
+    private int scores = 0;
 
 
 
     public playState(stateManager manager){
         super(manager);
+        font = new BitmapFont();
         tubeArray = new Array<tubes>();
         bird = new trumpBird(25, 300);
         // this is to zoom in on only one part of the graphics
         cam.setToOrtho(false, TrumpBirdMain.WIDTH/2, TrumpBirdMain.HEIGHT/2);
         background = new Texture("background.jpg");
         for(int i = 0; i<=this.TUBE_NUMBER;i++){
-            if(i == 0){
                 tubeArray.add(new tubes(i * this.TUBE_SPACING + tubes.TUBE_WIDTH +200));
-            }
-            else{
-                tubeArray.add(new tubes(i * this.TUBE_SPACING + tubes.TUBE_WIDTH + new Random().nextInt(100) + 150));
-            }
+
         }
         lastPostion = tubeArray.get(tubeArray.size-1).getTopTubPos().x;
+        music = Gdx.audio.newMusic(Gdx.files.internal("Music.mp3"));
+        music.setLooping(true);
+        music.setVolume(0.5f);
+        music.play();
+        no = Gdx.audio.newSound(Gdx.files.internal("NO!!!!.mp3"));
     }
 
     @Override
@@ -55,7 +66,18 @@ public class playState extends States {
         this.input();
         bird.update(time);
         cam.position.x = bird.getPostion().x + 80;
+        if(Double.compare(bird.getPostion().y, 0) == 0 && !gameOver){
+            this.gameOver = true;
+            if(!bird.getCrashed()) {
+                bird.crash();
+            }
+            music.stop();
+            no.play();
+        }
         for(tubes tube: tubeArray){
+            if(this.gameOver||bird.getCrashed()){
+                break;
+            }
             if(cam.position.x-(cam.viewportWidth/2)>tube.getTopTubPos().x+tube.getTopTube().getWidth()) {
                 if(tube.getTopTubPos().x>this.lastPostion){
                     tube.getTopTubPos().x = lastPostion;
@@ -65,7 +87,7 @@ public class playState extends States {
 
             }
            if(tube.collides(bird.getBounds())){
-                manager.set(new playState(manager));
+                bird.crash();
                 break;
             }
         }
@@ -83,6 +105,12 @@ public class playState extends States {
             ab.draw(tube.getTopTube(), tube.getTopTubPos().x, tube.getTopTubPos().y);
             ab.draw(tube.getBottomTube(), tube.getBotTubePos().x, tube.getBotTubePos().y);
         }
+        if(!this.gameOver){
+            font.draw(ab, Integer.toString(scores), cam.position.x, cam.position.y+150);
+        }
+        if(this.gameOver){
+            font.draw(ab, "GAME OVER", cam.position.x-40, cam.position.y);
+        }
         ab.end();
     }
 
@@ -94,5 +122,8 @@ public class playState extends States {
            }
            bird.disapose();
            background.dispose();
+           music.dispose();
+           font.dispose();
+           no.dispose();
     }
 }

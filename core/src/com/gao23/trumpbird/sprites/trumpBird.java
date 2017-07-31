@@ -1,9 +1,12 @@
 package com.gao23.trumpbird.sprites;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.BooleanArray;
 
 /**
  * Created by GAO on 7/24/2017.
@@ -16,6 +19,9 @@ public class trumpBird {
     private Vector3 velocity;
     private Texture trumpB;
     private Rectangle bounds;
+    private Sound flapSound;
+    private Sound boomSound;
+    private Boolean isCrashed = false;
 
 
     public trumpBird(int x, int y){
@@ -23,6 +29,8 @@ public class trumpBird {
         velocity = new Vector3(0,0,0);
         trumpB = new Texture("Trump.png");
         bounds = new Rectangle(x,y, trumpB.getWidth(),trumpB.getHeight());
+        flapSound = Gdx.audio.newSound(Gdx.files.internal("sfx_wing.ogg"));
+        boomSound = Gdx.audio.newSound(Gdx.files.internal("boom.mp3"));
     }
 
     public Vector3 getPostion() {
@@ -33,10 +41,19 @@ public class trumpBird {
         return trumpB;
     }
 
+    public Boolean getCrashed() {
+        return isCrashed;
+    }
+
     public void update(float dt){
-            this.velocity.add(0, GRAVITY, 0);
-            this.velocity.scl(dt);
-        this.position.add(HORIZONTAL_VELOCITY*dt, this.velocity.y, 0);
+        this.velocity.add(0, GRAVITY, 0);
+        this.velocity.scl(dt);
+        if(!isCrashed) {
+            this.position.add(HORIZONTAL_VELOCITY * dt, this.velocity.y, 0);
+        }
+        if(isCrashed&&this.position.y>0){
+            this.position.add(-HORIZONTAL_VELOCITY * dt, this.velocity.y, 0);
+        }
         if (this.position.y < 0) {
             this.position.y = 0;
         }
@@ -51,7 +68,10 @@ public class trumpBird {
     }
 
     public void jump(){
-        velocity.y = 250;
+        if(!isCrashed) {
+            velocity.y = 250;
+            flapSound.play();
+        }
     }
 
     public Rectangle getBounds(){
@@ -60,6 +80,13 @@ public class trumpBird {
 
     public void disapose(){
         trumpB.dispose();
+        flapSound.dispose();
+        boomSound.dispose();
+    }
+
+    public void crash(){
+        this.isCrashed = true;
+        boomSound.play();
     }
 
 
