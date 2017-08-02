@@ -5,14 +5,11 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.utils.Array;
 import com.gao23.trumpbird.sprites.trumpBird;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gao23.trumpbird.TrumpBirdMain;
 import com.gao23.trumpbird.sprites.tubes;
-
-import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -30,7 +27,6 @@ public class playState extends States {
     private Sound no;
     private boolean gameOver = false;
     BitmapFont font;
-    private int scores = 0;
 
 
 
@@ -100,14 +96,11 @@ public class playState extends States {
         ab.setProjectionMatrix(cam.combined);
         ab.begin();
         ab.draw(background, bird.getPostion().x-40, 0, cam.viewportWidth,cam.viewportHeight);
-        ab.draw(bird.getTrumpB(), bird.getPostion().x, bird.getPostion().y);
         for(tubes tube: tubeArray) {
             ab.draw(tube.getTopTube(), tube.getTopTubPos().x, tube.getTopTubPos().y);
             ab.draw(tube.getBottomTube(), tube.getBotTubePos().x, tube.getBotTubePos().y);
         }
-        if(!this.gameOver){
-            font.draw(ab, Integer.toString(scores), cam.position.x, cam.position.y+150);
-        }
+        ab.draw(bird.getTrumpB(), bird.getPostion().x, bird.getPostion().y);
         if(this.gameOver){
             font.draw(ab, "GAME OVER", cam.position.x-40, cam.position.y);
         }
