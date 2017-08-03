@@ -25,9 +25,9 @@ public class TrumpBirdMain extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		manager = new stateManager();
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		batch = new SpriteBatch();
+		manager = new stateManager(batch);
 		manager.push(new menuState(manager));
 
 	}

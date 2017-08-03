@@ -11,12 +11,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gao23.trumpbird.TrumpBirdMain;
 import com.gao23.trumpbird.sprites.tubes;
 import java.util.Random;
+import com.gao23.trumpbird.hud;
 
 /**
  * Created by GAO on 7/23/2017.
  */
 
 public class playState extends States {
+    private hud scoreAndButton;
     private trumpBird bird;
     private Texture background;
     private static final int TUBE_SPACING = 125;
@@ -32,6 +34,7 @@ public class playState extends States {
 
     public playState(stateManager manager){
         super(manager);
+        scoreAndButton = new hud(manager.getAb());
         font = new BitmapFont();
         tubeArray = new Array<tubes>();
         bird = new trumpBird(25, 300);
@@ -105,6 +108,8 @@ public class playState extends States {
             font.draw(ab, "GAME OVER", cam.position.x-40, cam.position.y);
         }
         ab.end();
+        ab.setProjectionMatrix(scoreAndButton.stage.getCamera().combined);
+        scoreAndButton.stage.draw();
     }
 
 

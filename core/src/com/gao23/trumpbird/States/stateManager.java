@@ -10,8 +10,15 @@ import java.util.Stack;
 
 public class stateManager {
     private Stack<States> states;
+    private SpriteBatch ab;
 
-    public stateManager(){
+    public SpriteBatch getAb() {
+        return ab;
+    }
+
+    public stateManager(SpriteBatch ab){
+        this.ab = ab;
+
         states = new Stack<States>();
     }
 
