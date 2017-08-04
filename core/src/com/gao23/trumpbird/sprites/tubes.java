@@ -19,6 +19,8 @@ public class tubes {
     private Vector2 topTubPos, botTubePos;
     private Rectangle topBounds, botBounds;
     private Random rand;
+    public Rectangle scoreMarker;
+    private boolean checked = false;
 
     public Texture getTopTube() {
         return topTube;
@@ -44,6 +46,7 @@ public class tubes {
         this.botTubePos = new Vector2(x, topTubPos.y-this.TUBE_GAP-bottomTube.getHeight());
         topBounds = new Rectangle(topTubPos.x,topTubPos.y,topTube.getWidth(),topTube.getHeight());
         botBounds = new Rectangle(botTubePos.x, botTubePos.y, bottomTube.getWidth(),bottomTube.getHeight());
+        scoreMarker = new Rectangle(botBounds.x+botBounds.width/2, botBounds.y+botBounds.height,1,500);
     }
 
     public void reposition(float x){
@@ -51,6 +54,8 @@ public class tubes {
         this.botTubePos = new Vector2(x, topTubPos.y-this.TUBE_GAP-bottomTube.getHeight());
         topBounds.setPosition(topTubPos.x,topTubPos.y);
         botBounds.setPosition(botTubePos.x,botTubePos.y);
+        scoreMarker.setPosition(botBounds.x+botBounds.width/2,botBounds.y+botBounds.height);
+        checked = false;
     }
 
     public boolean collides(Rectangle trump){
@@ -70,4 +75,18 @@ public class tubes {
         return topBounds;
 
     }
+
+    public boolean scores(Rectangle trump){
+        if(checked){
+            return false;
+        }
+        else if(trump.overlaps(scoreMarker)){
+            checked = true;
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
 }

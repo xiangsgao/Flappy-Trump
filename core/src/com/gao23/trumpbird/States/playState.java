@@ -3,15 +3,22 @@ package com.gao23.trumpbird.States;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gao23.trumpbird.sprites.trumpBird;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gao23.trumpbird.TrumpBirdMain;
 import com.gao23.trumpbird.sprites.tubes;
 import java.util.Random;
-import com.gao23.trumpbird.hud;
 
 /**
  * Created by GAO on 7/23/2017.
@@ -27,15 +34,18 @@ public class playState extends States {
     private float lastPostion;
     private Music music;
     private Sound no;
+    private Sound beep;
     private boolean gameOver = false;
+    // No use for this as of now. It was once used to draw game over on screen but now it is replaced by uhd's stage and labels.
+    // I kept it for future reference.
     BitmapFont font;
+    private int scores = 0;
 
 
 
     public playState(stateManager manager){
         super(manager);
         scoreAndButton = new hud(manager.getAb());
-        font = new BitmapFont();
         tubeArray = new Array<tubes>();
         bird = new trumpBird(25, 300);
         // this is to zoom in on only one part of the graphics
@@ -51,6 +61,7 @@ public class playState extends States {
         music.setVolume(0.5f);
         music.play();
         no = Gdx.audio.newSound(Gdx.files.internal("NO!!!!.mp3"));
+        beep = Gdx.audio.newSound(Gdx.files.internal("Beep.mp3"));
     }
 
     @Override
@@ -87,7 +98,11 @@ public class playState extends States {
             }
            if(tube.collides(bird.getBounds())){
                 bird.crash();
-                break;
+            }
+            if(tube.scores(bird.getBounds())){
+                scores += 1;
+                beep.setVolume(beep.play(),0.05f);
+                scoreAndButton.scoreUpdate();
             }
         }
         cam.update();
@@ -105,7 +120,7 @@ public class playState extends States {
         }
         ab.draw(bird.getTrumpB(), bird.getPostion().x, bird.getPostion().y);
         if(this.gameOver){
-            font.draw(ab, "GAME OVER", cam.position.x-40, cam.position.y);
+           scoreAndButton.displayGameOver();
         }
         ab.end();
         ab.setProjectionMatrix(scoreAndButton.stage.getCamera().combined);
@@ -123,5 +138,59 @@ public class playState extends States {
            music.dispose();
            font.dispose();
            no.dispose();
+           beep.dispose();
+           scoreAndButton.stage.dispose();
     }
+
+
+    // embedded hud class cuz easier
+    public class hud {
+        // stage is an empty box
+        public Stage stage;
+        // Label is a widget good for drawing text
+        private Label scoreLabel;
+        // this sets up a new camera so uhd(stage) does not move as the main camera moves with the bird
+        private Viewport viewport;
+        private Table GameOver = null;
+
+
+        public hud (SpriteBatch ab){
+            // sets up the camera size
+            viewport = new FitViewport(TrumpBirdMain.WIDTH/2,TrumpBirdMain.HEIGHT/2,new OrthographicCamera());
+            //stage takes in the viewport and configures its size
+            stage = new Stage(viewport,ab);
+            //this organizes the shit in our stage os widget isn't all over the place
+            Table table = new Table();
+            // default is the center, this places all the widget at the top... top center now
+            table.top();
+            table.setFillParent(true);
+            scoreLabel = new Label(Integer.toString(playState.this.scores), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+            table.add(scoreLabel).expandX();
+            table.pad(50);
+            // adds everything in the table to the stage so everything is neat and organized
+            stage.addActor(table);
+
+        }
+
+        public void scoreUpdate(){
+            scoreLabel.setText(Integer.toString(playState.this.scores));
+        }
+
+        public void displayGameOver() {
+            if (GameOver == null) {
+                GameOver = new Table();
+                Label overLabel = new Label("GAME OVER", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+                Label overScoreLabel = new Label("FINAL SCORE IS " + playState.this.scores, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+                GameOver.setFillParent(true);
+                GameOver.center();
+                GameOver.add(overLabel).expandX();
+                GameOver.row();
+                GameOver.add(overScoreLabel).expandX();
+                stage.addActor(GameOver);
+            }
+        }
+
+    }
+
+
 }

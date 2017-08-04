@@ -39,8 +39,8 @@ public class stateManager {
         states.peek().update(dt);
     }
 
-    public void render(SpriteBatch batch){
-          this.states.peek().render(batch);
+    public void render(){
+          this.states.peek().render(ab);
     }
 
 

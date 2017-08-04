@@ -17,8 +17,7 @@ public class TrumpBirdMain extends ApplicationAdapter {
 	//custom manager for managing states
 	private stateManager manager;
 
-	// this is the image file to render
-	private SpriteBatch batch;
+
 
 
 
@@ -26,8 +25,7 @@ public class TrumpBirdMain extends ApplicationAdapter {
 	@Override
 	public void create () {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
-		batch = new SpriteBatch();
-		manager = new stateManager(batch);
+		manager = new stateManager(new SpriteBatch());
 		manager.push(new menuState(manager));
 
 	}
@@ -39,7 +37,7 @@ public class TrumpBirdMain extends ApplicationAdapter {
 		// this gets the update delta time for manager to update
 		manager.update(Gdx.graphics.getDeltaTime());
 		// this has the manager render the file
-		manager.render(batch);
+		manager.render();
 	}
 	
 
