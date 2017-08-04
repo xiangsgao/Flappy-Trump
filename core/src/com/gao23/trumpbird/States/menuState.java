@@ -19,6 +19,7 @@ public class menuState extends States {
     private Texture playIcon;
 
 
+
     @Override
     public void dispose() {
         background.dispose();
@@ -48,7 +49,7 @@ public class menuState extends States {
     public void render(SpriteBatch ab) {
          ab.begin();
          ab.draw(background, 0, 0 , TrumpBirdMain.WIDTH, TrumpBirdMain.HEIGHT);
-         ab.draw(playIcon, (TrumpBirdMain.WIDTH/2)-(playIcon.getWidth()/2), TrumpBirdMain.HEIGHT/2);
+         ab.draw(playIcon, (TrumpBirdMain.WIDTH/2)-(playIcon.getWidth()/2), TrumpBirdMain.HEIGHT/2-(playIcon.getHeight()/2));
          ab.end();
     }
 }
