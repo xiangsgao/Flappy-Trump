@@ -7,9 +7,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -36,6 +41,7 @@ public class playState extends States {
     private Sound no;
     private Sound beep;
     private boolean gameOver = false;
+    private boolean pause = false;
     // No use for this as of now. It was once used to draw game over on screen but now it is replaced by uhd's stage and labels.
     // I kept it for future reference.
     BitmapFont font;
@@ -46,6 +52,7 @@ public class playState extends States {
     public playState(stateManager manager){
         super(manager);
         scoreAndButton = new hud(manager.getAb());
+        Gdx.input.setInputProcessor(scoreAndButton.stage);
         tubeArray = new Array<tubes>();
         bird = new trumpBird(25, 300);
         // this is to zoom in on only one part of the graphics
@@ -66,15 +73,17 @@ public class playState extends States {
 
     @Override
     protected void input() {
-         if(Gdx.input.justTouched()){
-             bird.jump();
-         }
+        if(Gdx.input.justTouched() && !pause){
+            bird.jump();
+        }
     }
 
     @Override
     public void update(float time) {
         this.input();
-        bird.update(time);
+        if(!this.pause) {
+            bird.update(time);
+        }
         cam.position.x = bird.getPostion().x + 80;
         if(Double.compare(bird.getPostion().y, 0) == 0 && !gameOver){
             this.gameOver = true;
@@ -85,7 +94,7 @@ public class playState extends States {
             no.play();
         }
         for(tubes tube: tubeArray){
-            if(this.gameOver||bird.getCrashed()){
+            if(this.gameOver||bird.getCrashed()||this.pause){
                 break;
             }
             if(cam.position.x-(cam.viewportWidth/2)>tube.getTopTubPos().x+tube.getTopTube().getWidth()) {
@@ -143,7 +152,7 @@ public class playState extends States {
     }
 
 
-    // embedded hud class cuz easier
+    // embedded hud class for easier abstraction
     public class hud {
         // stage is an empty box
         public Stage stage;
@@ -151,10 +160,15 @@ public class playState extends States {
         private Label scoreLabel;
         // this sets up a new camera so uhd(stage) does not move as the main camera moves with the bird
         private Viewport viewport;
+        public ImageButton button;
+        private TextureRegionDrawable resumeTexture;
+        private TextureRegionDrawable pauseTexture;
         private Table GameOver = null;
 
 
         public hud (SpriteBatch ab){
+            resumeTexture = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("resume.png"))));
+            pauseTexture = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("pause.png"))));
             // sets up the camera size
             viewport = new FitViewport(TrumpBirdMain.WIDTH/2,TrumpBirdMain.HEIGHT/2,new OrthographicCamera());
             //stage takes in the viewport and configures its size
@@ -163,10 +177,21 @@ public class playState extends States {
             Table table = new Table();
             // default is the center, this places all the widget at the top... top center now
             table.top();
+            // this is important cuz it makes the image look right BUT don't use this on button
             table.setFillParent(true);
             scoreLabel = new Label(Integer.toString(playState.this.scores), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
             table.add(scoreLabel).expandX();
             table.pad(50);
+            button = new ImageButton(pauseTexture);
+            button.setPosition(25,350);
+            button.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    // need to change icon and pause the game
+                    pause = true;
+                }
+            });
+            stage.addActor(button);
             // adds everything in the table to the stage so everything is neat and organized
             stage.addActor(table);
 
