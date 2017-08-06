@@ -10,10 +10,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -44,7 +46,7 @@ public class playState extends States {
     private boolean pause = false;
     // No use for this as of now. It was once used to draw game over on screen but now it is replaced by uhd's stage and labels.
     // I kept it for future reference.
-    BitmapFont font;
+    // BitmapFont font;
     private int scores = 0;
 
 
@@ -87,6 +89,7 @@ public class playState extends States {
         cam.position.x = bird.getPostion().x + 80;
         if(Double.compare(bird.getPostion().y, 0) == 0 && !gameOver){
             this.gameOver = true;
+            scoreAndButton.button.getStyle().up = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("resume.png"))));
             if(!bird.getCrashed()) {
                 bird.crash();
             }
@@ -139,16 +142,16 @@ public class playState extends States {
 
     @Override
     public void dispose() {
+
+        scoreAndButton.stage.dispose();
            for(tubes Tube: tubeArray){
                Tube.dispose();
            }
            bird.disapose();
            background.dispose();
            music.dispose();
-           font.dispose();
            no.dispose();
            beep.dispose();
-           scoreAndButton.stage.dispose();
     }
 
 
@@ -161,14 +164,11 @@ public class playState extends States {
         // this sets up a new camera so uhd(stage) does not move as the main camera moves with the bird
         private Viewport viewport;
         public ImageButton button;
-        private TextureRegionDrawable resumeTexture;
-        private TextureRegionDrawable pauseTexture;
+
         private Table GameOver = null;
 
 
         public hud (SpriteBatch ab){
-            resumeTexture = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("resume.png"))));
-            pauseTexture = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("pause.png"))));
             // sets up the camera size
             viewport = new FitViewport(TrumpBirdMain.WIDTH/2,TrumpBirdMain.HEIGHT/2,new OrthographicCamera());
             //stage takes in the viewport and configures its size
@@ -182,13 +182,28 @@ public class playState extends States {
             scoreLabel = new Label(Integer.toString(playState.this.scores), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
             table.add(scoreLabel).expandX();
             table.pad(50);
-            button = new ImageButton(pauseTexture);
+            ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+            style.checked = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("resume.png"))));
+            style.up = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("pause.png"))));
+            button = new ImageButton(style);
             button.setPosition(25,350);
             button.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     // need to change icon and pause the game
-                    pause = true;
+                    if(gameOver){
+                        playState.this.manager.set(new playState(playState.this.manager));
+                    }
+                   else if(pause == false && !gameOver) {
+                        button.setChecked(true);
+                        pause = true;
+                        playState.this.music.pause();
+                    }
+                    else{
+                        pause = false;
+                        button.setChecked(false);
+                        playState.this.music.play();
+                    }
                 }
             });
             stage.addActor(button);
@@ -201,16 +216,21 @@ public class playState extends States {
             scoreLabel.setText(Integer.toString(playState.this.scores));
         }
 
+
+
         public void displayGameOver() {
             if (GameOver == null) {
                 GameOver = new Table();
                 Label overLabel = new Label("GAME OVER", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
                 Label overScoreLabel = new Label("FINAL SCORE IS " + playState.this.scores, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+                Label playAgain = new Label("TAP PLAY BUTTON TO PLAY AGAIN", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
                 GameOver.setFillParent(true);
                 GameOver.center();
                 GameOver.add(overLabel).expandX();
                 GameOver.row();
                 GameOver.add(overScoreLabel).expandX();
+                GameOver.row();
+                GameOver.add(playAgain).expandX();
                 stage.addActor(GameOver);
             }
         }
