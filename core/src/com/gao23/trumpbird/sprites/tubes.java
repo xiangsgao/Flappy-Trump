@@ -1,5 +1,6 @@
 package com.gao23.trumpbird.sprites;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -11,10 +12,10 @@ import java.util.Random;
  */
 
 public class tubes {
-    public static final int TUBE_WIDTH = 35;
-    private static final int RANGE_OF_HEIGHT_RANDOM = 130;
-    private static final int TUBE_GAP = 100;
-    private static final int LOWEST_TUBE_HEIGHT = 100;
+    public static final int TUBE_WIDTH = 100;
+    private static final int RANGE_OF_HEIGHT_RANDOM = 150;
+    private static final int TUBE_GAP = 150;
+    private static final int LOWEST_TUBE_HEIGHT = 180;
     private Texture topTube, bottomTube;
     private Vector2 topTubPos, botTubePos;
     private Rectangle topBounds, botBounds;
@@ -47,6 +48,7 @@ public class tubes {
         topBounds = new Rectangle(topTubPos.x,topTubPos.y,topTube.getWidth(),topTube.getHeight());
         botBounds = new Rectangle(botTubePos.x, botTubePos.y, bottomTube.getWidth(),bottomTube.getHeight());
         scoreMarker = new Rectangle(botBounds.x+botBounds.width/2, botBounds.y+botBounds.height,1,500);
+        Gdx.app.log("Tubes","instantiated");
     }
 
     public void reposition(float x){

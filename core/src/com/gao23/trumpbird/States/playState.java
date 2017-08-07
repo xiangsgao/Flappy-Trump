@@ -10,15 +10,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gao23.trumpbird.sprites.trumpBird;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -35,7 +34,7 @@ public class playState extends States {
     private hud scoreAndButton;
     private trumpBird bird;
     private Texture background;
-    private static final int TUBE_SPACING = 125;
+    private static final int TUBE_SPACING = 200;
     private static final int TUBE_NUMBER = 4;
     private Array<tubes> tubeArray;
     private float lastPostion;
@@ -53,12 +52,13 @@ public class playState extends States {
 
     public playState(stateManager manager){
         super(manager);
+        bird = new trumpBird(15, 300);
         scoreAndButton = new hud(manager.getAb());
         Gdx.input.setInputProcessor(scoreAndButton.stage);
         tubeArray = new Array<tubes>();
-        bird = new trumpBird(25, 300);
         // this is to zoom in on only one part of the graphics
-        cam.setToOrtho(false, TrumpBirdMain.WIDTH/2, TrumpBirdMain.HEIGHT/2);
+        cam.setToOrtho(false,TrumpBirdMain.WIDTH/2,TrumpBirdMain.HEIGHT/2);
+        cam.update();
         background = new Texture("background.jpg");
         for(int i = 0; i<=this.TUBE_NUMBER;i++){
                 tubeArray.add(new tubes(i * this.TUBE_SPACING + tubes.TUBE_WIDTH +200));
@@ -71,6 +71,7 @@ public class playState extends States {
         music.play();
         no = Gdx.audio.newSound(Gdx.files.internal("NO!!!!.mp3"));
         beep = Gdx.audio.newSound(Gdx.files.internal("Beep.mp3"));
+        Gdx.app.log("PlayState","instantiated");
     }
 
     @Override
@@ -104,7 +105,7 @@ public class playState extends States {
                 if(tube.getTopTubPos().x>this.lastPostion){
                     tube.getTopTubPos().x = lastPostion;
                 }
-                tube.reposition(100 + tubes.TUBE_WIDTH + new Random().nextInt(100) + this.lastPostion);
+                tube.reposition(100 + tubes.TUBE_WIDTH + new Random().nextInt(50) + this.lastPostion);
                 this.lastPostion = tube.getTopTubPos().x;
 
             }
@@ -117,7 +118,11 @@ public class playState extends States {
                 scoreAndButton.scoreUpdate();
             }
         }
+        if(this.gameOver){
+            scoreAndButton.displayGameOver();
+        }
         cam.update();
+
     }
 
     @Override
@@ -125,18 +130,17 @@ public class playState extends States {
         // this adjusts the sprite batch to the zoomed in camera
         ab.setProjectionMatrix(cam.combined);
         ab.begin();
-        ab.draw(background, bird.getPostion().x-40, 0, cam.viewportWidth,cam.viewportHeight);
+        ab.draw(background,bird.getPostion().x-100,0,cam.viewportWidth,cam.viewportHeight);
+
         for(tubes tube: tubeArray) {
             ab.draw(tube.getTopTube(), tube.getTopTubPos().x, tube.getTopTubPos().y);
             ab.draw(tube.getBottomTube(), tube.getBotTubePos().x, tube.getBotTubePos().y);
         }
         ab.draw(bird.getTrumpB(), bird.getPostion().x, bird.getPostion().y);
-        if(this.gameOver){
-           scoreAndButton.displayGameOver();
-        }
         ab.end();
         ab.setProjectionMatrix(scoreAndButton.stage.getCamera().combined);
         scoreAndButton.stage.draw();
+
     }
 
 
@@ -162,17 +166,20 @@ public class playState extends States {
         // Label is a widget good for drawing text
         private Label scoreLabel;
         // this sets up a new camera so uhd(stage) does not move as the main camera moves with the bird
-        private Viewport viewport;
+        private Viewport viewport2;
         public ImageButton button;
+
 
         private Table GameOver = null;
 
 
         public hud (SpriteBatch ab){
             // sets up the camera size
-            viewport = new FitViewport(TrumpBirdMain.WIDTH/2,TrumpBirdMain.HEIGHT/2,new OrthographicCamera());
+            viewport2 = new ScreenViewport();
+            OrthographicCamera cam = new OrthographicCamera(TrumpBirdMain.WIDTH/2,TrumpBirdMain.HEIGHT/2);
+
             //stage takes in the viewport and configures its size
-            stage = new Stage(viewport,ab);
+            stage = new Stage(viewport2,ab);
             //this organizes the shit in our stage os widget isn't all over the place
             Table table = new Table();
             // default is the center, this places all the widget at the top... top center now
@@ -186,7 +193,7 @@ public class playState extends States {
             style.checked = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("resume.png"))));
             style.up = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("pause.png"))));
             button = new ImageButton(style);
-            button.setPosition(25,350);
+            button.setPosition(bird.getPostion().x+100,viewport2.getScreenHeight()-100);
             button.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
@@ -209,7 +216,7 @@ public class playState extends States {
             stage.addActor(button);
             // adds everything in the table to the stage so everything is neat and organized
             stage.addActor(table);
-
+            Gdx.app.log("UHD","instantiated");
         }
 
         public void scoreUpdate(){

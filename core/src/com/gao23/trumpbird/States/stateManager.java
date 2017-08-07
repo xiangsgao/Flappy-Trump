@@ -1,6 +1,8 @@
 package com.gao23.trumpbird.States;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Logger;
 
 import java.util.Stack;
 
@@ -18,8 +20,8 @@ public class stateManager {
 
     public stateManager(SpriteBatch ab){
         this.ab = ab;
-
         states = new Stack<States>();
+        Gdx.app.log("StateManager","instantiated");
     }
 
     public void push(States state){

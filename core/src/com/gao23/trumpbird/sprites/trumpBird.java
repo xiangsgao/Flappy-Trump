@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.BooleanArray;
+import com.gao23.trumpbird.TrumpBirdMain;
 
 /**
  * Created by GAO on 7/24/2017.
@@ -14,7 +15,7 @@ import com.badlogic.gdx.utils.BooleanArray;
 
 public class trumpBird {
     private static final int GRAVITY = -15;
-    private static final int HORIZONTAL_VELOCITY = 100;
+    private static final int HORIZONTAL_VELOCITY = 140;
     private Vector3 position;
     private Vector3 velocity;
     private Texture trumpB;
@@ -27,10 +28,11 @@ public class trumpBird {
     public trumpBird(int x, int y){
         position = new Vector3(x,y,0);
         velocity = new Vector3(0,0,0);
-        trumpB = new Texture("Trump.png");
+        trumpB = new Texture("trump.png");
         bounds = new Rectangle(x,y, trumpB.getWidth(),trumpB.getHeight());
         flapSound = Gdx.audio.newSound(Gdx.files.internal("sfx_wing.ogg"));
         boomSound = Gdx.audio.newSound(Gdx.files.internal("boom.mp3"));
+        Gdx.app.log("TrumpBird","instantiated");
     }
 
     public Vector3 getPostion() {
@@ -57,8 +59,8 @@ public class trumpBird {
         if (this.position.y < 0) {
             this.position.y = 0;
         }
-        if (this.position.y > 350) {
-            this.position.y = 350;
+        if (this.position.y > TrumpBirdMain.HEIGHT/2-trumpB.getHeight()) {
+            this.position.y = TrumpBirdMain.HEIGHT/2-trumpB.getHeight();
         }
 
         bounds.setPosition(position.x,position.y);
@@ -69,7 +71,7 @@ public class trumpBird {
 
     public void jump(){
         if(!isCrashed) {
-            velocity.y = 250;
+            velocity.y = 280;
             flapSound.play();
         }
     }

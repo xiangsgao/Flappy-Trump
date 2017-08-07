@@ -2,6 +2,7 @@ package com.gao23.trumpbird.States;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -44,16 +46,19 @@ public class menuState extends States {
         background = new Texture("background.jpg");
         Texture playIcon = new Texture("playbtn.png");
         ImageButton playButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(playIcon)));
-        stage = new Stage(new ScreenViewport(), manager.getAb());
-        playButton.setPosition(TrumpBirdMain.WIDTH/2-(playIcon.getWidth()/2),TrumpBirdMain.HEIGHT/2-(playIcon.getHeight()/2));
         playButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                menuState.this.manager.set(new playState(manager));
             }
         });
+        cam.setToOrtho(false,TrumpBirdMain.WIDTH/2,TrumpBirdMain.HEIGHT/2);
+        cam.update();
+        stage = new Stage(new FillViewport(TrumpBirdMain.WIDTH,TrumpBirdMain.HEIGHT,cam), manager.getAb());
+        playButton.setPosition(cam.position.x-playButton.getWidth()/2,cam.position.y-playButton.getHeight()/2);
         stage.addActor(playButton);
         Gdx.input.setInputProcessor(stage);
+        Gdx.app.log("MenuState","instantiated");
     }
 
     @Override
@@ -68,8 +73,9 @@ public class menuState extends States {
 
     @Override
     public void render(SpriteBatch ab) {
+        ab.setProjectionMatrix(cam.combined);
          ab.begin();
-         ab.draw(background, 0, 0 , TrumpBirdMain.WIDTH, TrumpBirdMain.HEIGHT);
+         ab.draw(background, 0, 0,cam.viewportWidth,cam.viewportHeight);
          ab.end();
          stage.draw();
     }

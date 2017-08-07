@@ -9,9 +9,9 @@ import com.gao23.trumpbird.States.menuState;
 import com.gao23.trumpbird.States.stateManager;
 
 public class TrumpBirdMain extends ApplicationAdapter {
-	public static final int WIDTH = 480;
-	public static final int HEIGHT = 800;
-	public static final String TITLE = "Trump Bird";
+	public static final int WIDTH = 720;
+	public static final int HEIGHT = 1280;
+	public static final String TITLE = "Flappy Trump";
 
 
 	//custom manager for managing states
