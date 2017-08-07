@@ -5,4 +5,4 @@ Much of the credit goes to him. I only contributed my own code that hacked, modi
 
 To download my game:
 If on android then download and install the apk file in my master directory. Be sure to enable unknown sources on your android phone first.
-If on linux, mac, windows, download the desktop jar file in my master directory. Be sure that you have java JDK install on your computer first. 
+If on linux, mac, windows, download the desktop jar file in my master directory. Be sure that you have java JDK installed on your computer first. 
