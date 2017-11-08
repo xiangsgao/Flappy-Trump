@@ -7,4 +7,4 @@ To download my game:
 If on android then download and install the apk file in my master directory. Be sure to enable unknown sources on your android phone first.
 If on linux, mac, windows, download the desktop jar file in my master directory. Be sure that you have java JDK installed on your computer first. 
 
-Sorry if the game runs laggy. I didn't bother optimizing the code. My cheap android phone with cortext A53 stutters a lot but on pc, it shouldn't be an issue.
+This app will be publish on the playstore for my own personal amusement. I also plan to recycle the source code to make similar mockery out of any future policticians. 
