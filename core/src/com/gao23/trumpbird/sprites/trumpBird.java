@@ -28,7 +28,7 @@ public class trumpBird {
     public trumpBird(int x, int y){
         position = new Vector3(x,y,0);
         velocity = new Vector3(0,0,0);
-        trumpB = new Texture("trump.png");
+        trumpB = new Texture("Trump.png");
         bounds = new Rectangle(x,y, trumpB.getWidth(),trumpB.getHeight());
         flapSound = Gdx.audio.newSound(Gdx.files.internal("sfx_wing.ogg"));
         boomSound = Gdx.audio.newSound(Gdx.files.internal("boom.mp3"));
